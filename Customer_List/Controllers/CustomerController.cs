@@ -1,4 +1,4 @@
-﻿using CustomersWebDemo.DbAccess;
+using CustomersWebDemo.DbAccess;
 using CustomersWebDemo.Models;
 using System;
 using System.Collections.Generic;
@@ -10,19 +10,23 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using CustomersWebDemo.Services;
 
 namespace CustomersWebDemo.Controllers
 {
     public class CustomerController : Controller
     {
 
-        private CustomerEntitiesDbContext _db;
+        private readonly ICustomerService _customerService;
 
 
-        public CustomerController()
+        public CustomerController() : this(new CustomerService())
         {
-            this._db = new CustomerEntitiesDbContext();
+        }
 
+        public CustomerController(ICustomerService customerService)
+        {
+            this._customerService = customerService;
         }
 
 
@@ -30,10 +34,10 @@ namespace CustomersWebDemo.Controllers
         {
             if (disposing)
             {
-                _db.Dispose();
+                _customerService.Dispose();
             }
+
             base.Dispose(disposing);
-          
         }
 
 
@@ -48,41 +52,8 @@ namespace CustomersWebDemo.Controllers
             string locationFilter, int? typeFilter, int page)
         {
             // take customers that are not deleted
-            var query = _db.Customers.Where(f => f.FlagDeleted == 0); 
 
-            // аpply filters
-            if (!string.IsNullOrEmpty(nameFilter))
-            {
-                query = query.Where(f => f.CustomerName.Contains(nameFilter));
-            }
-
-            if (!string.IsNullOrEmpty(emailFilter))
-            {
-                query = query.Where(f => f.Email.Contains(emailFilter));
-            }
-
-            if (!string.IsNullOrEmpty(locationFilter))
-            {
-                query = query.Where(f => f.Location.Contains(locationFilter));
-            }
-
-            if (typeFilter != null)
-            {
-                query = query.Where(f => f.CustomerType == (CustomerTypeEnum)typeFilter);
-            }
-
-            // get page and count info
-            int pageSize = int.Parse(System.Configuration.ConfigurationManager.AppSettings["pageSize"]);
-            int itemCount = query.Count();
-
-            // return 1 page of filtered data
-            var data = query.OrderBy(a => a.CustomerID)
-                .Skip(page * pageSize).Take(pageSize).ToList();
-
-            // populate view data variables
-
-            ViewData["itemCount"] = itemCount;
-            ViewData["currentPage"] = page;
+            var data = _customerService.Filter(nameFilter, emailFilter, locationFilter, typeFilter, page);
 
             return PartialView(data);
         }
@@ -96,7 +67,10 @@ namespace CustomersWebDemo.Controllers
         public ActionResult Edit(int id)
         {
             ModelState.Clear();
-            return View("CreateEdit", _db.Customers.Find(id));
+
+            var customer = _customerService.GetById(id);
+
+            return View("CreateEdit", customer);
         }
 
 
@@ -105,17 +79,8 @@ namespace CustomersWebDemo.Controllers
         {
             if (ModelState.IsValid)
             {
+                _customerService.Save(c);
 
-                if (c.CustomerID <= 0)   // new customer
-                {
-                    _db.Customers.Add(c);
-                }
-                else // existing customer
-                {
-                    _db.Entry(c).State = EntityState.Modified;
-                }
-
-                _db.SaveChanges();
                 return RedirectToAction("Index");
             }
 
@@ -127,10 +92,9 @@ namespace CustomersWebDemo.Controllers
 
         public ActionResult Details(int id)
         {
-            
-            var customer = _db.Customers.Find(id);
-            return View(customer);
+            var customer = _customerService.GetById(id);
 
+            return View(customer);
         }
 
 
@@ -138,7 +102,8 @@ namespace CustomersWebDemo.Controllers
 
         public ActionResult Delete(int id)
         {
-            var customer = _db.Customers.Find(id);
+            var customer = _customerService.GetById(id);
+
             return View(customer);
         }
 
@@ -146,9 +111,7 @@ namespace CustomersWebDemo.Controllers
         [HttpPost, ActionName("Delete")]
         public ActionResult DeleteConfirmed(int id)
         {
-            var customer = _db.Customers.Find(id);
-            customer.FlagDeleted = 1;
-            _db.SaveChanges();
+            _customerService.Delete(id);
 
             return RedirectToAction("Index");
         }
