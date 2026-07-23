@@ -1,4 +1,4 @@
-﻿using CustomersWebDemo.DbAccess;
+using CustomersWebDemo.DbAccess;
 using CustomersWebDemo.Models;
 using System;
 using System.Collections.Generic;
