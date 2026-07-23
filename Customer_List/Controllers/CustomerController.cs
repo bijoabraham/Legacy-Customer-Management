@@ -1,4 +1,4 @@
-﻿using CustomersWebDemo.DbAccess;
+using CustomersWebDemo.DbAccess;
 using CustomersWebDemo.Models;
 using System;
 using System.Collections.Generic;
@@ -9,7 +9,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
 
 namespace CustomersWebDemo.Controllers
 {
