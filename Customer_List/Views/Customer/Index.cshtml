@@ -87,8 +87,12 @@
 
 
     <div id="gridPlaceholder">
-        @Html.Action("Filter", new { nameFilter = "", emailFilter = "", locationFilter = "", typeFilter = "", page = "0" })
     </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            if(typeof applyFilter === 'function') { applyFilter(0); }
+        });
+    </script>
 
 
 }

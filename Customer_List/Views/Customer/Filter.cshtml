@@ -1,9 +1,10 @@
 @model IEnumerable<CustomersWebDemo.Models.Customer>
+@inject Microsoft.Extensions.Configuration.IConfiguration Configuration
 
 @{
     int itemcount = int.Parse(@ViewData["itemCount"].ToString());
     int currentpage = int.Parse(@ViewData["currentPage"].ToString());
-    int pagesize = int.Parse(@System.Configuration.ConfigurationManager.AppSettings["pageSize"]);
+    int pagesize = int.Parse(Configuration["pageSize"] ?? "5");
     int totalpages = (int)Math.Ceiling( (decimal)itemcount / (decimal)pagesize) ;
 
     string infolabel = "#Records: " + itemcount.ToString() + ", Page: " + (totalpages <= 0?  0 :  currentpage + 1).ToString() + " / " + totalpages.ToString();
@@ -81,19 +82,19 @@
     @if(totalpages > 1)
     {
             <li> 
-                <a href="javascript:void(0);" onclick="applyFilter(0);"><<</a>
+                <a href="javascript:void(0);" onclick="applyFilter(0);">&lt;&lt;</a>
             </li>
             <li> 
-                <a href="javascript:void(0);" onclick="applyFilter( @(currentpage > 1 ? currentpage-1 : 0));"><</a>
+                <a href="javascript:void(0);" onclick="applyFilter( @(currentpage > 1 ? currentpage-1 : 0));">&lt;</a>
             </li>
             <li class="active">
                 <a href="javascript:void(0);" >@(currentpage + 1)</a>
            </li>
             <li> 
-                <a href="javascript:void(0);" onclick="applyFilter(@(currentpage < totalpages -1? currentpage + 1 : totalpages-1));">></a>
+                <a href="javascript:void(0);" onclick="applyFilter(@(currentpage < totalpages -1? currentpage + 1 : totalpages-1));">&gt;</a>
             </li>
             <li> 
-                <a href="javascript:void(0);" onclick="applyFilter(@(totalpages-1));">>></a>
+                <a href="javascript:void(0);" onclick="applyFilter(@(totalpages-1));">&gt;&gt;</a>
             </li>
         
         

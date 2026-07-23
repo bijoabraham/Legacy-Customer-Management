@@ -9,18 +9,18 @@ namespace CustomersWebDemo.DbAccess
 {
     public class CustomerEntitiesDbContext : DbContext
     {
-        public CustomerEntitiesDbContext() : base("CustomersDB") { }
+        public CustomerEntitiesDbContext(DbContextOptions<CustomerEntitiesDbContext> options) : base(options) { }
 
             public DbSet<Customer> Customers { get; set; }
         
             public virtual void Commit()
             {
-                this.SaveChanges();
+                base.SaveChanges();
             }
 
             protected override void OnModelCreating(ModelBuilder modelBuilder)
             {
-                modelBuilder.Configurations.Add(new CustomerConfiguration());
+                modelBuilder.ApplyConfiguration(new CustomerConfiguration());
                 
             }
         

@@ -19,10 +19,9 @@ namespace CustomersWebDemo.Controllers
         private CustomerEntitiesDbContext _db;
 
 
-        public CustomerController()
+        public CustomerController(CustomerEntitiesDbContext db)
         {
-            this._db = new CustomerEntitiesDbContext();
-
+            this._db = db;
         }
 
 
@@ -72,7 +71,7 @@ namespace CustomersWebDemo.Controllers
             }
 
             // get page and count info
-            int pageSize = int.Parse(System.Configuration.ConfigurationManager.AppSettings["pageSize"]);
+            int pageSize = 5;
             int itemCount = query.Count();
 
             // return 1 page of filtered data
