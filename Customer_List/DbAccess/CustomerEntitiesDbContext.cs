@@ -1,7 +1,7 @@
 using CustomersWebDemo.Models;
 using System;
 using System.Collections.Generic;
-using System.Data.Entity;
+using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Web;
 
@@ -15,10 +15,10 @@ namespace CustomersWebDemo.DbAccess
         
             public virtual void Commit()
             {
-                base.SaveChanges();
+                this.SaveChanges();
             }
 
-            protected override void OnModelCreating(DbModelBuilder modelBuilder)
+            protected override void OnModelCreating(ModelBuilder modelBuilder)
             {
                 modelBuilder.Configurations.Add(new CustomerConfiguration());
                 
